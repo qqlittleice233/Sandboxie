@@ -340,6 +340,7 @@ private:
 	QAction*			m_pSupport;
 	QAction*			m_pForum;
 	QAction*			m_pManual;
+	QAction*			m_pContribution;
 	QAction*			m_pUpdate;
 	QAction*			m_pAbout;
 	QAction*			m_pAboutQt;
