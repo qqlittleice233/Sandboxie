@@ -442,6 +442,7 @@ void CSandMan::CreateHelpMenu(bool bAdvanced)
 		//}
 		m_pForum = m_pMenuHelp->addAction(tr("Visit Support Forum"), this, SLOT(OnHelp()));
 		m_pManual = m_pMenuHelp->addAction(tr("Online Documentation"), this, SLOT(OnHelp()));
+		m_pContribution = m_pMenuHelp->addAction(tr("Contribution guidelines"), this, SLOT(OnHelp()));
 		m_pMenuHelp->addSeparator();
 		m_pUpdate = m_pMenuHelp->addAction(tr("Check for Updates"), this, SLOT(CheckForUpdates()));
 		m_pMenuHelp->addSeparator();
@@ -3119,6 +3120,8 @@ void CSandMan::OnHelp()
 		QDesktopServices::openUrl(QUrl("https://sandboxie-plus.com/go.php?to=sbie-forum"));
 	else if (sender() == m_pManual)
 		QDesktopServices::openUrl(QUrl("https://sandboxie-plus.com/go.php?to=sbie-docs"));
+	else if (sender() == m_pContribution)
+		QDesktopServices::openUrl(QUrl("https://sandboxie-plus.com/go.php?to=sbie-contribution"));
 	else
 		QDesktopServices::openUrl(QUrl("https://sandboxie-plus.com/go.php?to=patreon"));
 }
