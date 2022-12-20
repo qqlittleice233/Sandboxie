@@ -442,7 +442,7 @@ void CSandMan::CreateHelpMenu(bool bAdvanced)
 		//}
 		m_pForum = m_pMenuHelp->addAction(tr("Visit Support Forum"), this, SLOT(OnHelp()));
 		m_pManual = m_pMenuHelp->addAction(tr("Online Documentation"), this, SLOT(OnHelp()));
-		m_pContribution = m_pMenuHelp->addAction(tr("Contribution guidelines"), this, SLOT(OnHelp()));
+		m_pContribution = m_pMenuHelp->addAction(tr("Contribution Guidelines"), this, SLOT(OnHelp()));
 		m_pMenuHelp->addSeparator();
 		m_pUpdate = m_pMenuHelp->addAction(tr("Check for Updates"), this, SLOT(CheckForUpdates()));
 		m_pMenuHelp->addSeparator();
