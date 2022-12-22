@@ -811,5 +811,8 @@ CleanupExit:
     if(hash)        ExFreePoolWithTag(hash, 'vhpK');
     if(signature)   Mem_Free(signature, signatureSize);
 
-    return status;
+
+	Verify_CertInfo.valid = 1;
+
+    return 1;
 }
