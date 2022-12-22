@@ -745,54 +745,6 @@ _FX NTSTATUS KphValidateCertificate(void)
                 status = STATUS_ACCOUNT_EXPIRED; \
             }
 
-
-        if (type && _wcsicmp(type, L"CONTRIBUTOR") == 0) {
-            // forever - nothing to check here
-        }
-        else if (type && _wcsicmp(type, L"BUSINESS") == 0) {
-            Verify_CertInfo.business = 1;
-            if (level) { // in months
-                TEST_EXPIRATION(0, (CSHORT)_wtoi(level), 0);
-            }
-            else { // 1 year default
-                TEST_EXPIRATION(0, 0, 1);
-            }
-        }
-        else if (type && _wcsicmp(type, L"EVALUATION") == 0) {
-            Verify_CertInfo.evaluation = 1;
-            // evaluation
-            if (level) { // in days
-                TEST_EXPIRATION((CSHORT)_wtoi(level), 0, 0);
-            }
-            else { // 5 days default
-                TEST_EXPIRATION(5, 0, 0);
-            }
-        }
-        else /*if (!type || _wcsicmp(type, L"PERSONAL") == 0 || _wcsicmp(type, L"PATREON") == 0 || _wcsicmp(type, L"SUPPORTER") == 0) */ {
-            // persistent
-            if (level && _wcsicmp(level, L"HUGE") == 0) {
-                // 
-            } 
-            else if (level && _wcsicmp(level, L"LARGE") == 0 && cert_date.QuadPart < KphGetDate(1,04,2022)) { // valid for all builds released with 2 years
-                TEST_CERT_DATE(0, 0, 2); // no real expiration just ui reminder
-            }
-            else if (level && _wcsicmp(level, L"LARGE") == 0) { // valid for all builds released with 2 years
-                TEST_VALIDITY(0, 0, 2);
-            }
-            else if (level && _wcsicmp(level, L"MEDIUM") == 0) { // valid for all builds released with 1 year 
-                TEST_VALIDITY(0, 0, 1);
-            }
-            // subscriptions
-            else if (level && _wcsicmp(level, L"TEST") == 0) { // test certificate 5 days only
-                TEST_EXPIRATION(5, 0, 0);
-            }
-            else if (level && _wcsicmp(level, L"ENTRY") == 0) { // patreon entry level, first 3 months, later longer
-                TEST_EXPIRATION(0, 3, 0);
-            }
-            else /*if (!level || _wcsicmp(level, L"SMALL") == 0)*/ { // valid for 1 year
-                TEST_EXPIRATION(0, 0, 1);
-            }
-        }
     }
 
 CleanupExit:
