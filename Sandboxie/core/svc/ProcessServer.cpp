@@ -844,22 +844,6 @@ HANDLE ProcessServer::RunSandboxedGetToken(
             ShouldAdjustDacl = true;
 
         }
-        /*else if (...) {
-
-            //
-            // use session token
-            //
-
-            ULONG SessionId = PipeServer::GetCallerSessionId();
-
-            ok = WTSQueryUserToken(SessionId, &OldTokenHandle);
-
-            if (! ok)
-                return NULL;
-
-            ShouldAdjustSessionId = false;
-
-        }*/
         else
         // OriginalToken BEGIN
         if (!SbieApi_QueryConfBool(boxname, L"NoSecurityIsolation", FALSE) && !SbieApi_QueryConfBool(boxname, L"OriginalToken", FALSE))
@@ -887,6 +871,40 @@ HANDLE ProcessServer::RunSandboxedGetToken(
 
         }
     }
+    else
+    {
+        typedef LONG (WINAPI *P_GetApplicationUserModelId)(
+                HANDLE hProcess, UINT32 * applicationUserModelIdLength, PWSTR applicationUserModelId);
+
+        static P_GetApplicationUserModelId pGetApplicationUserModelId = (P_GetApplicationUserModelId)-1;
+        if ((UINT_PTR)pGetApplicationUserModelId == -1)
+            pGetApplicationUserModelId = (P_GetApplicationUserModelId)GetProcAddress(_Kernel32, "GetApplicationUserModelId");
+         
+        if (pGetApplicationUserModelId) {
+        
+            //
+            // when the calling application is a modern app, we can't use its token
+            //
+
+            UINT32 length = 0;
+            LONG rc = pGetApplicationUserModelId(CallerProcessHandle, &length, NULL);
+            if (rc != APPMODEL_ERROR_NO_APPLICATION)
+            {
+                //
+                // use session token
+                //
+
+                ULONG SessionId = PipeServer::GetCallerSessionId();
+
+                ok = WTSQueryUserToken(SessionId, &OldTokenHandle);
+
+                if (!ok)
+                    return NULL;
+
+                ShouldAdjustSessionId = false;
+            }
+        }
+    }
 
     if (! OldTokenHandle) {
 
@@ -902,8 +920,8 @@ HANDLE ProcessServer::RunSandboxedGetToken(
     }
 
     //
-    // duplicate the token into a new primary token then adjust session
-    // then adjust session and default dacl
+    // duplicate the token into a new primary token,
+    // then adjust session and default DACL
     //
 
     ok = DuplicateTokenEx(OldTokenHandle, TOKEN_ADJUST_PRIVILEGES | TOKEN_RIGHTS, NULL,
@@ -923,7 +941,7 @@ HANDLE ProcessServer::RunSandboxedGetToken(
 
         //
         // if caller is sandboxed and asked for a system token,
-        // then we want to adjust the dacl in the new token
+        // then we want to adjust the DACL in the new token
         //
 
 		if (SbieApi_QueryConfBool(boxname, L"ExposeBoxedSystem", FALSE))
